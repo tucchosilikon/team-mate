@@ -19,7 +19,7 @@ services:
         generateValue: true
 
   # Frontend Static Site
-  - type: static_site
+  - type: web
     name: teammate-frontend
     env: static
     plan: free
