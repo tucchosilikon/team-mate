@@ -49,7 +49,8 @@ const PropertyCard = ({ property, onSelect, onEdit, onDelete, deleting }) => {
         setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
     };
 
-    const getImageUrl = (path) => path.startsWith('http') ? path : `http://127.0.0.1:5001${path}`;
+    const apiBase = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001/api').replace('/api', '');
+    const getImageUrl = (path) => path.startsWith('http') ? path : `${apiBase}${path}`;
 
     const toggleService = (service) => {
         if (expandedService === service) setExpandedService(null);
@@ -327,12 +328,12 @@ const Properties = () => {
     };
 
     // Filter and sort properties
-    const filteredProperties = properties
+    const filteredProperties = (Array.isArray(properties) ? properties : [])
         .filter(property =>
-            property.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            property.address.toLowerCase().includes(searchTerm.toLowerCase())
+            (property.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (property.address || '').toLowerCase().includes(searchTerm.toLowerCase())
         )
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
     const handleEdit = (property) => {
         setPropertyToEdit(property);
