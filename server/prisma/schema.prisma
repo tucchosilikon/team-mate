@@ -3,20 +3,70 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// Enums removed for SQLite compatibility. 
-// Validations should be handled at the application level (Zod/Joi).
+enum UserRole {
+  ADMIN
+  TEAM
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum LeadType {
+  OWNER
+  CUSTOMER
+  CLEANER
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  SIGNED
+  ARCHIVED
+}
+
+enum PropertyStatus {
+  ACTIVE
+  MAINTENANCE
+  INACTIVE
+}
+
+enum ProjectStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  BLOCKED
+}
+
+enum ProjectPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum RentStatus {
+  PENDING
+  PAID
+  OVERDUE
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
 
 model User {
   id       String @id @default(uuid())
   name     String
   email    String @unique
   password String
-  role     String @default("TEAM") // ADMIN, TEAM
-  status   String @default("ACTIVE") // ACTIVE, INACTIVE
+  role     UserRole @default(TEAM)
+  status   UserStatus @default(ACTIVE)
 
   projects     Project[]   @relation("UserProjects")
   assignedSubProjects SubProject[]
@@ -31,9 +81,9 @@ model User {
 model Lead {
   id          String  @id @default(uuid())
   name        String
-  type        String // OWNER, CUSTOMER, CLEANER
+  type        LeadType
   contactInfo String? // JSON stringified
-  status      String  @default("NEW") // NEW, CONTACTED, SIGNED, ARCHIVED
+  status      LeadStatus  @default(NEW)
 
   properties   Property[]
   transactions Transaction[]
@@ -177,7 +227,7 @@ model Property {
   minStay        Int?
   cleaningFee    Decimal?
 
-  status String @default("ACTIVE") // ACTIVE, MAINTENANCE, INACTIVE
+  status PropertyStatus @default(ACTIVE)
 
   hospitableId String? @unique
 
@@ -215,8 +265,8 @@ model Project {
   reservation   Reservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
 
   dueDate         DateTime?
-  status          String    @default("TODO") // TODO, IN_PROGRESS, DONE, BLOCKED
-  priority        String    @default("MEDIUM") // LOW, MEDIUM, HIGH
+  status          ProjectStatus @default(TODO)
+  priority        ProjectPriority @default(MEDIUM)
   importanceLevel Int       @default(3)
 
   // Reservation Details
@@ -320,7 +370,7 @@ model RentRecord {
   amount   Decimal
   dueDate  DateTime
   paidDate DateTime?
-  status   String    @default("PENDING") // PENDING, PAID, OVERDUE
+  status   RentStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -343,7 +393,7 @@ model Transaction {
   date        DateTime @default(now())
   description String
   amount      Decimal
-  type        String // INCOME, EXPENSE
+  type        TransactionType
   category    String? // Supplies, Maintenance, Rent, etc.
 
   // Optional relations
