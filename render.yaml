@@ -27,11 +27,7 @@ services:
     staticPublishPath: client/dist
     envVars:
       - key: VITE_API_URL
-        fromService:
-          type: web
-          name: teammate-backend
-          property: host
-        value: ${teammate-backend.host}/api
+        value: https://${teammate-backend.host}/api
     routes:
       - type: rewrite
         source: /*
