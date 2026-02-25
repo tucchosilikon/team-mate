@@ -28,7 +28,7 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
-        value: https://${teammate-backend.host}/api
+        value: https://teammate-backend.onrender.com/api
     routes:
       - type: rewrite
         source: /*
