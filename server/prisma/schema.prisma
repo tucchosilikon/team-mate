@@ -1,0 +1,361 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Enums removed for SQLite compatibility. 
+// Validations should be handled at the application level (Zod/Joi).
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+  role     String @default("TEAM") // ADMIN, TEAM
+  status   String @default("ACTIVE") // ACTIVE, INACTIVE
+
+  projects     Project[]   @relation("UserProjects")
+  assignedSubProjects SubProject[]
+  notes            Note[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([status])
+}
+
+model Lead {
+  id          String  @id @default(uuid())
+  name        String
+  type        String // OWNER, CUSTOMER, CLEANER
+  contactInfo String? // JSON stringified
+  status      String  @default("NEW") // NEW, CONTACTED, SIGNED, ARCHIVED
+
+  properties   Property[]
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([type])
+  @@index([status])
+}
+
+model Property {
+  id      String  @id @default(uuid())
+  name    String
+  code    String?
+  unit    String?
+  address String
+
+  // Listing Links
+  listingUrl      String? // Airbnb
+  vrboListingUrl  String?
+  airbnbUrl String?
+  vrboUrl   String?
+  otherUrl  String?
+  hospitableUrl String?
+  directBookingUrl String?
+
+  images String? // JSON stringified array of image paths
+
+  // Core Info
+  maxOccupancy Int?
+  description String?
+  bedrooms     Int?
+  beds         Int?
+  bedSetup     String?
+  bathrooms    Decimal?
+  squareFeet  Int?
+  type         String?
+  checkInTime  String?
+  checkOutTime String?
+
+  // Pets
+  petsAllowed      Boolean  @default(false)
+  maxPets          Int      @default(0)
+  petFee           Decimal?
+  petPolicy        String?
+  petNotes         String?
+  petPaymentMethod String?
+
+  // Access
+  entryMethod           String?
+  accessInstructions    String? // Lockbox Code / Entry Info
+  lockboxLocation       String?
+  lockboxCode           String?
+  keyWorksAt            String?
+  backupKeyLocation     String?
+  backupKeyCode         String?
+  spareKeyContactNeeded Boolean @default(false)
+  emergencyCode         String?
+
+  // Parking
+  parkingInstructions String?
+  maxVehicles         Int?
+  parkingPassesNeeded Boolean @default(false)
+
+  // WiFi
+  wifiName         String?
+  wifiPassword     String?
+  modemLocation    String?
+  guestModemAccess Boolean @default(false)
+  ispProvider      String?
+
+  // Utilities
+  breakerLocation    String?
+  guestBreakerAccess Boolean @default(false)
+  thermostatLocation String?
+  thermostatControl  String?
+
+  // TV / Streaming
+  tvLocations String?
+  smartTv     Boolean @default(false)
+
+  // Kitchen / Appliances
+  hasStove            Boolean @default(true)
+  hasDishwasher       Boolean @default(true)
+  dishwasherNotes     String?
+  iceMakerStatus      String?
+  garbageDisposalInfo String?
+  coffeeMakerType     String?
+  applianceNotes      String?
+
+  // Outdoor
+  outdoorShower     String?
+  backyardAccess    String?
+  porchPatioNotes   String?
+  grillType         String?
+  grillLocation     String?
+  grillFuelProvided Boolean @default(false)
+  outdoorNotes      String?
+
+  // Beach / Bikes
+  beachTowels       Int?
+  beachGearLocation String?
+  bikesProvided     Boolean @default(false)
+  bikeCount         Int     @default(0)
+  bikeLocation      String?
+  bikesShared       Boolean @default(false)
+
+  // Locks / Codes
+  lockCodeYellow String?
+  lockCodeBlue   String?
+  lockCodeWhite  String?
+  lockCodeRed    String?
+
+  // House Rules
+  quietHours        String?
+  smokingPolicy     String?
+  otherRestrictions String?
+
+  // Maintenance / Ops
+  otherKeyLocations String?
+  ownerNotes        String?
+  managementContact String?
+  trashPickupDays   String?
+  trashInstructions String?
+
+  // Check-out
+  checkOutText  String?
+  checkOutNotes String?
+
+  // Files / Links
+  guideUrl       String?
+  photoFolderUrl String?
+  otherLinks     String?
+  generalNotes   String?
+
+  // Lost & Found
+  lostAndFoundPolicy String?
+
+  // Pricing & Terms
+  minNightlyRate Decimal?
+  minStay        Int?
+  cleaningFee    Decimal?
+
+  status String @default("ACTIVE") // ACTIVE, MAINTENANCE, INACTIVE
+
+  hospitableId String? @unique
+
+  ownerId String
+  owner   Lead   @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+
+  projects       Project[]
+  rentRecords RentRecord[]
+
+  // Property fields
+  isVerified      Boolean @default(false)
+  activeYears     Int     @default(0)
+  reviewCount     Int     @default(0)
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  Transaction Transaction[]
+
+  @@index([ownerId])
+  @@index([status])
+}
+
+model Project {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+
+  propertyId String?
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  assignedToId String?
+  assignedTo   User?   @relation("UserProjects", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  reservationId String?
+  reservation   Reservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+
+  dueDate         DateTime?
+  status          String    @default("TODO") // TODO, IN_PROGRESS, DONE, BLOCKED
+  priority        String    @default("MEDIUM") // LOW, MEDIUM, HIGH
+  importanceLevel Int       @default(3)
+
+  // Reservation Details
+  checkInDate  DateTime?
+  checkOutDate DateTime?
+  customerName String?
+  nightStay    Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([assignedToId])
+  @@index([reservationId])
+  @@index([status])
+  @@index([priority])
+
+  subProjects SubProject[]
+  notes    Note[]
+}
+
+model Reservation {
+  id String @id @default(uuid())
+
+  // Guest Info
+  guestName   String
+  adults      Int    @default(1)
+  children    Int    @default(0)
+  infants     Int    @default(0)
+  pets        Int    @default(0)
+  petNote     String?
+
+  // Stay Info
+  checkIn      DateTime
+  checkOut     DateTime
+  earlyCheckIn Boolean @default(false)
+  lateCheckOut Boolean @default(false)
+
+  // Financials
+  totalPrice        Decimal
+  accommodationFare Decimal // Price * nights
+  
+  // Fees
+  cleaningFee Decimal @default(0)
+  petFee      Decimal @default(0)
+  
+  // Service Fees
+  hostServiceFee  Decimal @default(0)
+  guestServiceFee Decimal @default(0)
+
+  // Taxes
+  dareTax Decimal @default(0)
+  ncTax   Decimal @default(0)
+
+  projects Project[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SubProject {
+  id          String  @id @default(uuid())
+  title       String
+  isCompleted Boolean @default(false)
+
+  projectId String
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  assignedToId String?
+  assignedTo   User?   @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([assignedToId])
+}
+
+model Note {
+  id      String @id @default(uuid())
+  content String
+
+  projectId String
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([authorId])
+}
+
+model RentRecord {
+  id         String   @id @default(uuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  amount   Decimal
+  dueDate  DateTime
+  paidDate DateTime?
+  status   String    @default("PENDING") // PENDING, PAID, OVERDUE
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([status])
+}
+
+model Platform {
+  id        String   @id @default(uuid())
+  name      String   @unique // HOSPITABLE, PRICELABS
+  apiKey    String
+  apiSecret String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Transaction {
+  id          String   @id @default(uuid())
+  date        DateTime @default(now())
+  description String
+  amount      Decimal
+  type        String // INCOME, EXPENSE
+  category    String? // Supplies, Maintenance, Rent, etc.
+
+  // Optional relations
+  propertyId String?
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  leadId String? // Payer/Payee
+  lead   Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+  @@index([date])
+}

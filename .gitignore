@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# SQLite
+*.db
+*.db-journal
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build
+build/
+.next/
+out/
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
