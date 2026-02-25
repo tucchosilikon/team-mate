@@ -40,4 +40,4 @@ services:
 databases:
   - name: teammate-db
     plan: free
-    postgresRole: teammate_user
+    user: teammate_user
