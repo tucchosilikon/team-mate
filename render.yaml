@@ -24,7 +24,7 @@ services:
     name: teammate-frontend
     env: static
     baseDir: client
-    buildCommand: npm ci && npm run build
+    buildCommand: rm -f package-lock.json && npm install && npm run build
     staticPublishPath: dist
     envVars:
       - key: VITE_API_URL
