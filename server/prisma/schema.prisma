@@ -71,6 +71,7 @@ model User {
   projects     Project[]   @relation("UserProjects")
   assignedSubProjects SubProject[]
   notes            Note[]
+  blogs         Blog[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
