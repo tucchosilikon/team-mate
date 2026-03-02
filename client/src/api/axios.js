@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+const isProduction = window.location.hostname.includes('onrender');
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001/api',
+    baseURL: isProduction 
+        ? 'https://teammate-backend.onrender.com/api' 
+        : (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001/api'),
     headers: {
         'Content-Type': 'application/json',
     },
