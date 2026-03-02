@@ -16,18 +16,12 @@ const useStore = create((set, get) => ({
     // Auth Actions
     login: async (email, password) => {
         set({ isLoading: true });
-        console.log('[login] API baseURL:', api.defaults.baseURL);
         try {
-            console.log('[login] Posting to /auth/login...');
             const { data } = await api.post('/auth/login', { email, password });
-            console.log('[login] Response received:', data);
             localStorage.setItem('token', data.token);
             set({ user: data, isAuthenticated: true, isLoading: false });
             return data;
         } catch (error) {
-            console.log('[login] Error caught:', error.message, error.code);
-            console.log('[login] Error response:', error.response?.data);
-            console.log('[login] Error config:', error.config?.url);
             set({ isLoading: false });
             throw error;
         }
@@ -51,19 +45,15 @@ const useStore = create((set, get) => ({
     isAuthChecking: true,
 
     checkAuth: async () => {
-        console.log('🔍 checkAuth called');
         const token = localStorage.getItem('token');
         if (!token) {
-            console.log('🔍 checkAuth: No token found');
             set({ isAuthChecking: false });
             return;
         }
         try {
             const { data } = await api.get('/auth/me');
-            console.log('🔍 checkAuth: Success, setting user');
             set({ user: data, isAuthenticated: true, isAuthChecking: false });
         } catch {
-            console.log('🔍 checkAuth: Failed, clearing auth');
             localStorage.removeItem('token');
             set({ user: null, isAuthenticated: false, isAuthChecking: false });
         }
@@ -249,25 +239,11 @@ const useStore = create((set, get) => ({
 
     // Property Actions
     fetchProperties: async () => {
-        console.log('[fetchProperties] Starting...');
         set({ isPropertiesLoading: true });
         try {
-            console.log('[fetchProperties] Making API call to /properties');
-            console.log('[fetchProperties] API baseURL:', api.defaults.baseURL);
             const { data } = await api.get('/properties');
-            console.log('[fetchProperties] Success! Received:', data.length, 'properties');
-            console.log('[fetchProperties] Data type:', typeof data, Array.isArray(data));
             set({ properties: data, isPropertiesLoading: false });
-            console.log('[fetchProperties] State updated');
         } catch (error) {
-            console.error('[fetchProperties] ERROR:', error);
-            console.error('[fetchProperties] Error details:', {
-                message: error.message,
-                response: error.response?.data,
-                status: error.response?.status,
-                config: error.config?.url
-            });
-            console.error('[fetchProperties] Server error message:', error.response?.data?.message);
             set({ isPropertiesLoading: false });
         }
     },

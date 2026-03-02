@@ -16,12 +16,9 @@ const Login = () => {
         e.preventDefault();
         setError('');
         try {
-            console.log('[Login] Attempting login...');
             await login(email.trim(), password);
-            console.log('[Login] Login successful, navigating...');
             navigate('/dashboard');
         } catch (err) {
-            console.error('[Login] Full error:', err);
             let msg = 'Login failed';
             if (err.code === 'ECONNABORTED') {
                 msg = 'Request timeout - server may be down';
@@ -32,7 +29,6 @@ const Login = () => {
             } else {
                 msg = err.message || 'Login failed';
             }
-            console.log('[Login] Error message:', msg);
             setError(msg);
         }
     };
