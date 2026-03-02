@@ -49,7 +49,10 @@ const PropertyCard = ({ property, onSelect, onEdit, onDelete, deleting }) => {
         setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
     };
 
-    const apiBase = (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001/api').replace('/api', '');
+    const isProduction = typeof window !== 'undefined' && window.location.hostname.includes('onrender');
+    const apiBase = isProduction 
+        ? 'https://teammate-backend-rk5a.onrender.com'
+        : ((import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001/api').replace('/api', ''));
     const getImageUrl = (path) => path.startsWith('http') ? path : `${apiBase}${path}`;
 
     const toggleService = (service) => {

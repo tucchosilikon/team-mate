@@ -7,8 +7,11 @@ const PropertyDetailsModal = ({ property, onClose }) => {
     const [uploading, setUploading] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+    const isProduction = typeof window !== 'undefined' && window.location.hostname.includes('onrender');
+    const imageBase = isProduction ? 'https://teammate-backend-rk5a.onrender.com' : 'http://127.0.0.1:5001';
+
     const images = property.images ? JSON.parse(property.images) : [];
-    const mainImage = images.length > 0 ? `http://127.0.0.1:5001${images[currentImageIndex]}` : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
+    const mainImage = images.length > 0 ? `${imageBase}${images[currentImageIndex]}` : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
 
     const handleUpload = async (e) => {
         const file = e.target.files[0];
@@ -58,7 +61,7 @@ const PropertyDetailsModal = ({ property, onClose }) => {
                                     onClick={() => setCurrentImageIndex(idx)}
                                     className={`h-12 w-16 rounded-md overflow-hidden border-2 transition-all shrink-0 ${currentImageIndex === idx ? 'border-blue-500' : 'border-white/50'}`}
                                 >
-                                    <img src={`http://127.0.0.1:5001${img}`} className="w-full h-full object-cover" />
+                                    <img src={`${imageBase}${img}`} className="w-full h-full object-cover" />
                                 </button>
                             ))}
                         </div>
