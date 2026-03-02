@@ -18,12 +18,16 @@ const useStore = create((set, get) => ({
         set({ isLoading: true });
         console.log('[login] API baseURL:', api.defaults.baseURL);
         try {
+            console.log('[login] Posting to /auth/login...');
             const { data } = await api.post('/auth/login', { email, password });
+            console.log('[login] Response received:', data);
             localStorage.setItem('token', data.token);
             set({ user: data, isAuthenticated: true, isLoading: false });
             return data;
         } catch (error) {
-            console.log('[login] Error:', error.response?.data || error.message);
+            console.log('[login] Error caught:', error.message, error.code);
+            console.log('[login] Error response:', error.response?.data);
+            console.log('[login] Error config:', error.config?.url);
             set({ isLoading: false });
             throw error;
         }
