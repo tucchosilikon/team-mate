@@ -247,6 +247,7 @@ const useStore = create((set, get) => ({
         set({ isPropertiesLoading: true });
         try {
             console.log('[fetchProperties] Making API call to /properties');
+            console.log('[fetchProperties] API baseURL:', api.defaults.baseURL);
             const { data } = await api.get('/properties');
             console.log('[fetchProperties] Success! Received:', data.length, 'properties');
             console.log('[fetchProperties] Data type:', typeof data, Array.isArray(data));
