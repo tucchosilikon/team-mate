@@ -308,6 +308,8 @@ const Properties = () => {
     const [deleting, setDeleting] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
+    console.log('[Properties] properties:', properties, 'isPropertiesLoading:', isPropertiesLoading);
+
     useEffect(() => {
         fetchProperties();
         // eslint-disable-next-line react-hooks/exhaustive-deps

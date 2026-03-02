@@ -249,7 +249,9 @@ const useStore = create((set, get) => ({
             console.log('[fetchProperties] Making API call to /properties');
             const { data } = await api.get('/properties');
             console.log('[fetchProperties] Success! Received:', data.length, 'properties');
+            console.log('[fetchProperties] Data type:', typeof data, Array.isArray(data));
             set({ properties: data, isPropertiesLoading: false });
+            console.log('[fetchProperties] State updated');
         } catch (error) {
             console.error('[fetchProperties] ERROR:', error);
             console.error('[fetchProperties] Error details:', {

@@ -22,6 +22,7 @@ export default defineConfig({
         },
         allowedHosts: [
             'localhost',
+            'ending-usage-suits-trees.trycloudflare.com',
             'teammate-frontend.onrender.com'
         ],
         watch: {
