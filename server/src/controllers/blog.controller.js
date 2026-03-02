@@ -56,6 +56,7 @@ const createBlog = async (req, res) => {
         
         res.status(201).json(blog);
     } catch (error) {
+        console.error("Error creating blog:", error);
         res.status(500).json({ message: error.message });
     }
 };
