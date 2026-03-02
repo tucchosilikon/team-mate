@@ -119,7 +119,6 @@ router.post('/import-data', protect, authorize('ADMIN'), async (req, res) => {
                         iceMakerStatus: property.iceMakerStatus,
                         garbageDisposalInfo: property.garbageDisposalInfo,
                         coffeeMakerType: property.coffeeMakerType,
-: property.coffeeMakerType,
                         applianceNotes: property.applianceNotes,
                         outdoorShower: property.outdoorShower,
                         backyardAccess: property.backyardAccess,
