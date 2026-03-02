@@ -16,10 +16,12 @@ const Login = () => {
         e.preventDefault();
         setError('');
         try {
+            console.log('[Login] Attempting login...');
             await login(email.trim(), password);
+            console.log('[Login] Login successful, navigating...');
             navigate('/dashboard');
         } catch (err) {
-            console.error(err);
+            console.error('[Login] Error:', err);
             const msg = err.response?.data?.message || err.message || 'Login failed';
             setError(msg);
         }
