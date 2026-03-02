@@ -8,6 +8,12 @@ const app = express();
 const httpServer = createServer(app);
 
 const path = require('path');
+const os = require('os');
+
+const isRender = process.env.RENDER === 'true' || process.env.RENDER_EXTERNAL_URL;
+const uploadDir = isRender 
+    ? path.join(os.tmpdir(), 'uploads') 
+    : path.join(__dirname, '../public/uploads');
 
 // Middleware
 app.use(helmet({
@@ -17,7 +23,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve Static Files (Images)
-app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
+app.use('/uploads', express.static(uploadDir));
 
 // Socket.io Setup
 const io = new Server(httpServer, {

@@ -53,6 +53,7 @@ const PropertyCard = ({ property, onSelect, onEdit, onDelete, deleting }) => {
     const apiBase = isProduction 
         ? 'https://teammate-backend-rk5a.onrender.com'
         : ((import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001/api').replace('/api', ''));
+    console.log('[PropertyCard] apiBase:', apiBase, 'image:', images[currentImageIndex]);
     const getImageUrl = (path) => path.startsWith('http') ? path : `${apiBase}${path}`;
 
     const toggleService = (service) => {
