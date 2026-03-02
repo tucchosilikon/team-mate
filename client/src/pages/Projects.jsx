@@ -43,7 +43,7 @@ const Projects = () => {
         }));
     };
 
-    const filteredProjects = projects.filter(project => {
+    const filteredProjects = (Array.isArray(projects) ? projects : []).filter(project => {
         const matchesStatus = filterStatus === 'ALL' || project.status === filterStatus;
         const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             project.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
