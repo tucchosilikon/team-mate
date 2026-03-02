@@ -54,7 +54,7 @@ const PropertyForm = ({ property, onClose }) => {
         vrboListingUrl: property?.vrboListingUrl || '',
         hospitableUrl: property?.hospitableUrl || '',
         directBookingUrl: property?.directBookingUrl || '',
-        otherListingUrl: property?.otherListingUrl || '',
+        otherUrl: property?.otherUrl || '',
 
         // Info
         maxOccupancy: property?.maxOccupancy || '',
@@ -418,7 +418,7 @@ const PropertyForm = ({ property, onClose }) => {
                             <Input label="VRBO URL" name="vrboListingUrl" />
                             <Input label="Hospitable URL" name="hospitableUrl" />
                             <Input label="Direct Booking URL" name="directBookingUrl" />
-                            <Input label="Other Listing URL" name="otherListingUrl" />
+                            <Input label="Other Listing URL" name="otherUrl" />
                         </div>
                     </Section>
 
