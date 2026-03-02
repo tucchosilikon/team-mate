@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const isProduction = window.location.hostname.includes('onrender');
+const isProduction = typeof window !== 'undefined' && window.location.hostname.includes('onrender');
+console.log('[axios] isProduction:', isProduction, 'hostname:', typeof window !== 'undefined' ? window.location.hostname : 'N/A');
 const api = axios.create({
     baseURL: isProduction 
         ? 'https://teammate-backend-rk5a.onrender.com/api' 
