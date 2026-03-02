@@ -45,7 +45,7 @@ const PropertyForm = ({ property, onClose }) => {
         code: property?.code || '',
         unit: property?.unit || '',
         address: property?.address || '',
-        ownerId: property?.ownerId || (leads.length > 0 ? leads[0].id : ''),
+        ownerId: property?.ownerId || (Array.isArray(leads) && leads.length > 0 ? leads[0].id : ''),
         type: property?.type || 'HOUSE',
         status: property?.status || 'ACTIVE',
 
@@ -337,7 +337,7 @@ const PropertyForm = ({ property, onClose }) => {
 
                         <Select label="Owner *" name="ownerId" required options={[
                             { value: '', label: 'Select Owner' },
-                            ...leads.filter(l => l.type === 'OWNER').map(l => ({ value: l.id, label: l.name }))
+                            ...(Array.isArray(leads) ? leads.filter(l => l.type === 'OWNER').map(l => ({ value: l.id, label: l.name })) : [])
                         ]} />
 
                         <Select label="Type" name="type" options={[
