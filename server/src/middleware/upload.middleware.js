@@ -1,9 +1,16 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '../../public/uploads');
+// Use /tmp on Render (ephemeral filesystem)
+const isRender = process.env.RENDER === 'true' || process.env.RENDER_EXTERNAL_URL;
+const uploadDir = isRender 
+    ? path.join(os.tmpdir(), 'uploads') 
+    : path.join(__dirname, '../../public/uploads');
+
+console.log('[upload] Upload directory:', uploadDir);
+
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }

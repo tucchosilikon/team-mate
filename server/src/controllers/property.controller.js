@@ -222,14 +222,22 @@ const deleteProperty = async (req, res) => {
 
 const uploadImage = async (req, res) => {
     try {
+        console.log('[uploadImage] Files received:', req.files);
+        console.log('[uploadImage] Property ID:', req.params.id);
+        
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ message: 'No files uploaded' });
         }
 
         const { id } = req.params;
-        const newImages = req.files.map(file => `/uploads/${file.filename}`);
-
+        
+        // Check if property exists
         const property = await prisma.property.findUnique({ where: { id } });
+        if (!property) {
+            return res.status(404).json({ message: 'Property not found' });
+        }
+        
+        const newImages = req.files.map(file => `/uploads/${file.filename}`);
 
         // Parse existing images
         let images = [];
@@ -249,7 +257,7 @@ const uploadImage = async (req, res) => {
         updatedProperty.images = images;
         res.json(updatedProperty);
     } catch (error) {
-        console.error(error);
+        console.error('[uploadImage] Error:', error);
         res.status(500).json({ message: error.message });
     }
 };
