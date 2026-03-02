@@ -343,6 +343,20 @@ const useStore = create((set, get) => ({
         set({ blogs: data });
     },
 
+    deleteBlog: async (id) => {
+        await api.delete(`/blogs/${id}`);
+        set((state) => ({
+            blogs: state.blogs.filter((b) => b.id !== id)
+        }));
+    },
+
+    updateBlogStatus: async (id, status) => {
+        const { data } = await api.put(`/blogs/${id}`, { status });
+        set((state) => ({
+            blogs: state.blogs.map((b) => (b.id === id ? data : b))
+        }));
+    },
+
     // Transaction Actions
     transactions: [],
     fetchTransactions: async () => {

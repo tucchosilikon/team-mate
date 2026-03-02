@@ -15,6 +15,7 @@ import Calendar from './pages/Calendar';
 
 import LandingPage from './pages/LandingPage';
 import Blog from './pages/Blog';
+import AdminBlogs from './pages/AdminBlogs';
 import BlogEditor from './pages/BlogEditor';
 
 const Layout = ({ children }) => {
@@ -53,6 +54,7 @@ function App() {
             <Route path="/accounts" element={isAuthenticated ? <Layout><Accounts /></Layout> : <Navigate to="/login" />} />
             <Route path="/users" element={isAuthenticated ? <Layout><UsersPage /></Layout> : <Navigate to="/login" />} />
             <Route path="/settings" element={isAuthenticated ? <Layout><Settings /></Layout> : <Navigate to="/login" />} />
+            <Route path="/admin/blogs" element={isAuthenticated ? <Layout><AdminBlogs /></Layout> : <Navigate to="/login" />} />
             <Route path="/admin/blogs/new" element={isAuthenticated ? <BlogEditor /> : <Navigate to="/login" />} />
             <Route path="/admin/blogs/:id" element={isAuthenticated ? <BlogEditor /> : <Navigate to="/login" />} />
         </Routes>

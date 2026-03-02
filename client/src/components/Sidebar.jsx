@@ -20,7 +20,7 @@ const Sidebar = () => {
 
     if (user?.role === 'ADMIN') {
         links.push({ name: 'Users', path: '/users', icon: Users });
-        links.push({ name: 'Blog Posts', path: '/admin/blogs/new', icon: FileText });
+        links.push({ name: 'Blog Posts', path: '/admin/blogs', icon: FileText });
     }
 
     return (
