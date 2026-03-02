@@ -31,7 +31,7 @@ const Calendar = () => {
     }, []);
 
     const events = useMemo(() => {
-        return projects
+        return (Array.isArray(projects) ? projects : [])
             .filter(project => {
                 if (selectedPropertyId === 'ALL') return true;
                 return project.propertyId === selectedPropertyId;
@@ -39,7 +39,7 @@ const Calendar = () => {
             // Only show projects with valid dates? Yes.
             .filter(project => project.checkInDate && project.checkOutDate)
             .map(project => {
-                const property = properties.find(p => p.id === project.propertyId);
+                const property = (Array.isArray(properties) ? properties : []).find(p => p.id === project.propertyId);
                 const propertyName = property ? property.name : 'Unknown Property';
 
                 return {
