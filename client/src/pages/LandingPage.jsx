@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PublicLayout from '../layouts/PublicLayout';
+import useStore from '../store/useStore';
+import api from '../api/axios';
 
 const services = [
   {
@@ -33,6 +35,35 @@ const stats = [
 ];
 
 const LandingPage = () => {
+  const { properties, fetchProperties, blogs, fetchBlogs } = useStore();
+  const [propertiesToShow, setPropertiesToShow] = useState([]);
+  const [blogsToShow, setBlogsToShow] = useState([]);
+
+  useEffect(() => {
+    fetchProperties();
+    fetchBlogs();
+  }, []);
+
+  useEffect(() => {
+    // Get active properties and shuffle for variety
+    const active = properties.filter(p => p.status === 'ACTIVE').slice(0, 6);
+    setPropertiesToShow(active);
+  }, [properties]);
+
+  useEffect(() => {
+    // Get published blogs
+    const published = blogs.filter(b => b.status === 'PUBLISHED').slice(0, 3);
+    setBlogsToShow(published);
+  }, [blogs]);
+
+  const getImageUrl = (path) => {
+    if (!path) return 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&q=80';
+    if (path.startsWith('http')) return path;
+    const isProduction = typeof window !== 'undefined' && window.location.hostname.includes('onrender');
+    const base = isProduction ? 'https://teammate-backend-rk5a.onrender.com' : 'http://127.0.0.1:5001';
+    return `${base}${path}`;
+  };
+
   return (
     <PublicLayout>
       <section className="landing-hero">
@@ -47,6 +78,51 @@ const LandingPage = () => {
           <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
             <a href="#contact" className="landing-btn landing-btn-primary">Get Started</a>
             <a href="#services" className="landing-btn landing-btn-outline" style={{ color: 'white', borderColor: 'white' }}>Our Services</a>
+          </div>
+        </div>
+      </section>
+
+      {/* Properties Section */}
+      <section id="properties" className="landing-section" style={{ background: '#f9fafb' }}>
+        <div className="landing-container">
+          <div className="landing-section-header">
+            <h2 className="landing-h2">Our Properties</h2>
+            <p>Explore our curated collection of premium rental properties</p>
+          </div>
+          
+          {propertiesToShow.length > 0 ? (
+            <div className="landing-services-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+              {propertiesToShow.map((property) => {
+                let images = [];
+                try {
+                  images = property.images ? JSON.parse(property.images) : [];
+                } catch (e) { images = []; }
+                
+                return (
+                  <div key={property.id} className="landing-service-card" style={{ padding: 0, overflow: 'hidden' }}>
+                    <img 
+                      src={getImageUrl(images[0])} 
+                      alt={property.name}
+                      style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+                    />
+                    <div style={{ padding: '20px' }}>
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '8px' }}>{property.name}</h3>
+                      <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '12px' }}>{property.address}</p>
+                      <div style={{ display: 'flex', gap: '12px', fontSize: '0.85rem', color: '#888' }}>
+                        {property.bedrooms && <span>🛏️ {property.bedrooms} beds</span>}
+                        {property.bathrooms && <span>🛁 {property.bathrooms} baths</span>}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p style={{ textAlign: 'center', color: '#666' }}>No properties available at the moment.</p>
+          )}
+          
+          <div style={{ textAlign: 'center', marginTop: '40px' }}>
+            <Link to="/properties" className="landing-btn landing-btn-primary">View All Properties</Link>
           </div>
         </div>
       </section>
@@ -68,6 +144,47 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Blog Section */}
+      {blogsToShow.length > 0 && (
+        <section id="blog" className="landing-section">
+          <div className="landing-container">
+            <div className="landing-section-header">
+              <h2 className="landing-h2">Latest from Our Blog</h2>
+              <p>Tips, news, and insights from our property management experts</p>
+            </div>
+            
+            <div className="landing-services-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
+              {blogsToShow.map((blog) => (
+                <article key={blog.id} className="landing-service-card" style={{ padding: 0, overflow: 'hidden' }}>
+                  {blog.coverImage && (
+                    <img 
+                      src={blog.coverImage} 
+                      alt={blog.title}
+                      style={{ width: '100%', height: '180px', objectFit: 'cover' }}
+                    />
+                  )}
+                  <div style={{ padding: '20px' }}>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '8px' }}>{blog.title}</h3>
+                    {blog.excerpt && (
+                      <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '12px', lineHeight: '1.5' }}>
+                        {blog.excerpt.length > 100 ? blog.excerpt.substring(0, 100) + '...' : blog.excerpt}
+                      </p>
+                    )}
+                    <p style={{ fontSize: '0.8rem', color: '#888' }}>
+                      {new Date(blog.publishedAt || blog.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </article>
+              ))}
+            </div>
+            
+            <div style={{ textAlign: 'center', marginTop: '40px' }}>
+              <Link to="/blog" className="landing-btn landing-btn-primary">View All Posts</Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="landing-section" style={{ background: 'var(--landing-navy)', color: 'white' }}>
         <div className="landing-container">

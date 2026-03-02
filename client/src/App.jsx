@@ -14,6 +14,8 @@ import Projects from './pages/Projects';
 import Calendar from './pages/Calendar';
 
 import LandingPage from './pages/LandingPage';
+import Blog from './pages/Blog';
+import BlogEditor from './pages/BlogEditor';
 
 const Layout = ({ children }) => {
     return (
@@ -40,6 +42,7 @@ function App() {
     return (
         <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/blog" element={<Blog />} />
             <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} />
             <Route path="/dashboard" element={isAuthenticated ? <Layout><Dashboard /></Layout> : <Navigate to="/login" />} />
             <Route path="/calendar" element={isAuthenticated ? <Layout><Calendar /></Layout> : <Navigate to="/login" />} />
@@ -50,6 +53,8 @@ function App() {
             <Route path="/accounts" element={isAuthenticated ? <Layout><Accounts /></Layout> : <Navigate to="/login" />} />
             <Route path="/users" element={isAuthenticated ? <Layout><UsersPage /></Layout> : <Navigate to="/login" />} />
             <Route path="/settings" element={isAuthenticated ? <Layout><Settings /></Layout> : <Navigate to="/login" />} />
+            <Route path="/admin/blogs/new" element={isAuthenticated ? <BlogEditor /> : <Navigate to="/login" />} />
+            <Route path="/admin/blogs/:id" element={isAuthenticated ? <BlogEditor /> : <Navigate to="/login" />} />
         </Routes>
     );
 }

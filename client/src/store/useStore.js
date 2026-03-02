@@ -8,6 +8,7 @@ const useStore = create((set, get) => ({
     properties: [],
     leads: [],
     leads: [],
+    blogs: [],
     isLoading: false,
     isProjectsLoading: false,
     isPropertiesLoading: false,
@@ -333,6 +334,13 @@ const useStore = create((set, get) => ({
         set((state) => ({
             leads: state.leads.map((l) => (l.id === id ? data : l))
         }));
+    },
+
+    // Blog Actions
+    blogs: [],
+    fetchBlogs: async () => {
+        const { data } = await api.get('/blogs');
+        set({ blogs: data });
     },
 
     // Transaction Actions

@@ -66,5 +66,6 @@ app.use('/api/leads', leadRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/dashboard', require('./routes/dashboard.routes'));
 app.use('/api/admin', require('./routes/import.routes'));
+app.use('/api/blogs', require('./routes/blog.routes'));
 
 module.exports = { app, httpServer, io };

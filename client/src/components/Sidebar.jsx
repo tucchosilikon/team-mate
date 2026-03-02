@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Building, CheckSquare, Users, Settings, LogOut, DollarSign, Calendar } from 'lucide-react';
+import { LayoutDashboard, Building, CheckSquare, Users, Settings, LogOut, DollarSign, Calendar, FileText } from 'lucide-react';
 import useStore from '../store/useStore';
 import clsx from 'clsx';
 
@@ -19,7 +19,8 @@ const Sidebar = () => {
     ];
 
     if (user?.role === 'ADMIN') {
-        links.push({ name: 'Users', path: '/users', icon: Users }); // Using Users icon again or different one
+        links.push({ name: 'Users', path: '/users', icon: Users });
+        links.push({ name: 'Blog Posts', path: '/admin/blogs/new', icon: FileText });
     }
 
     return (
