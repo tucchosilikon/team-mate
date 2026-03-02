@@ -22,7 +22,7 @@ export default defineConfig({
         },
         allowedHosts: [
             'localhost',
-            'interactions-foster-rehab-bullet.trycloudflare.com'
+            'teammate-frontend.onrender.com'
         ],
         watch: {
             usePolling: true
