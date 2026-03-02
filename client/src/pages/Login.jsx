@@ -21,8 +21,18 @@ const Login = () => {
             console.log('[Login] Login successful, navigating...');
             navigate('/dashboard');
         } catch (err) {
-            console.error('[Login] Error:', err);
-            const msg = err.response?.data?.message || err.message || 'Login failed';
+            console.error('[Login] Full error:', err);
+            let msg = 'Login failed';
+            if (err.code === 'ECONNABORTED') {
+                msg = 'Request timeout - server may be down';
+            } else if (err.message.includes('Network Error')) {
+                msg = 'Network error - check if backend is running';
+            } else if (err.response) {
+                msg = err.response.data?.message || `Server error: ${err.response.status}`;
+            } else {
+                msg = err.message || 'Login failed';
+            }
+            console.log('[Login] Error message:', msg);
             setError(msg);
         }
     };

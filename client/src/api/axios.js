@@ -29,10 +29,10 @@ api.interceptors.response.use(
         return response;
     },
     (error) => {
-        console.log('[axios] Error:', error.message, error.response?.status, error.config?.url);
+        console.log('[axios] Error:', error.message, error.code, error.response?.status, error.config?.url);
         if (error.response?.status === 401) {
             localStorage.removeItem('token');
-            window.location.href = '/login';
+            // Don't redirect automatically - let the component handle it
         }
         return Promise.reject(error);
     }
