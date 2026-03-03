@@ -262,6 +262,34 @@ const uploadImage = async (req, res) => {
     }
 };
 
+const getPublicProperties = async (req, res) => {
+    try {
+        const properties = await prisma.property.findMany({
+            where: { status: 'ACTIVE' },
+            orderBy: { createdAt: 'desc' },
+        });
+        res.json(properties);
+    } catch (error) {
+        console.error('Error in getPublicProperties:', error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const getPublicProperty = async (req, res) => {
+    try {
+        const property = await prisma.property.findUnique({
+            where: { id: req.params.id },
+        });
+        if (property && property.status === 'ACTIVE') {
+            res.json(property);
+        } else {
+            res.status(404).json({ message: 'Property not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getProperties,
     getProperty,
@@ -269,4 +297,6 @@ module.exports = {
     updateProperty,
     deleteProperty,
     uploadImage,
+    getPublicProperties,
+    getPublicProperty,
 };

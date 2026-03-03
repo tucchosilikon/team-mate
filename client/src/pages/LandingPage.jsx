@@ -99,21 +99,23 @@ const LandingPage = () => {
                 } catch (e) { images = []; }
                 
                 return (
-                  <div key={property.id} className="landing-service-card" style={{ padding: 0, overflow: 'hidden' }}>
-                    <img 
-                      src={getImageUrl(images[0])} 
-                      alt={property.name}
-                      style={{ width: '100%', height: '200px', objectFit: 'cover' }}
-                    />
-                    <div style={{ padding: '20px' }}>
-                      <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '8px' }}>{property.name}</h3>
-                      <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '12px' }}>{property.address}</p>
-                      <div style={{ display: 'flex', gap: '12px', fontSize: '0.85rem', color: '#888' }}>
-                        {property.bedrooms && <span>🛏️ {property.bedrooms} beds</span>}
-                        {property.bathrooms && <span>🛁 {property.bathrooms} baths</span>}
+                  <Link to={`/properties/${property.id}`} key={property.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <div className="landing-service-card" style={{ padding: 0, overflow: 'hidden', cursor: 'pointer' }}>
+                      <img 
+                        src={getImageUrl(images[0])} 
+                        alt={property.name}
+                        style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+                      />
+                      <div style={{ padding: '20px' }}>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '8px' }}>{property.name}</h3>
+                        <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '12px' }}>{property.address}</p>
+                        <div style={{ display: 'flex', gap: '12px', fontSize: '0.85rem', color: '#888' }}>
+                          {property.bedrooms && <span>🛏️ {property.bedrooms} beds</span>}
+                          {property.bathrooms && <span>🛁 {property.bathrooms} baths</span>}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
@@ -156,26 +158,28 @@ const LandingPage = () => {
             
             <div className="landing-services-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))' }}>
               {blogsToShow.map((blog) => (
-                <article key={blog.id} className="landing-service-card" style={{ padding: 0, overflow: 'hidden' }}>
-                  {blog.coverImage && (
-                    <img 
-                      src={blog.coverImage} 
-                      alt={blog.title}
-                      style={{ width: '100%', height: '180px', objectFit: 'cover' }}
-                    />
-                  )}
-                  <div style={{ padding: '20px' }}>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '8px' }}>{blog.title}</h3>
-                    {blog.excerpt && (
-                      <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '12px', lineHeight: '1.5' }}>
-                        {blog.excerpt.length > 100 ? blog.excerpt.substring(0, 100) + '...' : blog.excerpt}
-                      </p>
+                <Link to={`/blog/${blog.id}`} key={blog.id} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <article className="landing-service-card" style={{ padding: 0, overflow: 'hidden', cursor: 'pointer' }}>
+                    {blog.coverImage && (
+                      <img 
+                        src={blog.coverImage} 
+                        alt={blog.title}
+                        style={{ width: '100%', height: '180px', objectFit: 'cover' }}
+                      />
                     )}
-                    <p style={{ fontSize: '0.8rem', color: '#888' }}>
-                      {new Date(blog.publishedAt || blog.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </article>
+                    <div style={{ padding: '20px' }}>
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '8px' }}>{blog.title}</h3>
+                      {blog.excerpt && (
+                        <p style={{ fontSize: '0.9rem', color: '#666', marginBottom: '12px', lineHeight: '1.5' }}>
+                          {blog.excerpt.length > 100 ? blog.excerpt.substring(0, 100) + '...' : blog.excerpt}
+                        </p>
+                      )}
+                      <p style={{ fontSize: '0.8rem', color: '#888' }}>
+                        {new Date(blog.publishedAt || blog.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </article>
+                </Link>
               ))}
             </div>
             

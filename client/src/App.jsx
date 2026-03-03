@@ -15,8 +15,11 @@ import Calendar from './pages/Calendar';
 
 import LandingPage from './pages/LandingPage';
 import Blog from './pages/Blog';
+import BlogDetail from './pages/BlogDetail';
 import AdminBlogs from './pages/AdminBlogs';
 import BlogEditor from './pages/BlogEditor';
+import PublicProperties from './pages/PublicProperties';
+import PublicPropertyDetail from './pages/PublicPropertyDetail';
 
 const Layout = ({ children }) => {
     return (
@@ -44,10 +47,13 @@ function App() {
         <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:id" element={<BlogDetail />} />
+            <Route path="/properties" element={<PublicProperties />} />
+            <Route path="/properties/:id" element={<PublicPropertyDetail />} />
             <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} />
             <Route path="/dashboard" element={isAuthenticated ? <Layout><Dashboard /></Layout> : <Navigate to="/login" />} />
             <Route path="/calendar" element={isAuthenticated ? <Layout><Calendar /></Layout> : <Navigate to="/login" />} />
-            <Route path="/properties" element={isAuthenticated ? <Layout><Properties /></Layout> : <Navigate to="/login" />} />
+            <Route path="/admin/properties" element={isAuthenticated ? <Layout><Properties /></Layout> : <Navigate to="/login" />} />
             <Route path="/projects" element={isAuthenticated ? <Layout><Projects /></Layout> : <Navigate to="/login" />} />
             <Route path="/projects/:id" element={isAuthenticated ? <Layout><ProjectDetails /></Layout> : <Navigate to="/login" />} />
             <Route path="/leads" element={isAuthenticated ? <Layout><Leads /></Layout> : <Navigate to="/login" />} />

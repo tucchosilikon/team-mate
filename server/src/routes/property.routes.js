@@ -7,10 +7,17 @@ const {
     createProperty,
     updateProperty,
     deleteProperty,
-    uploadImage
+    uploadImage,
+    getPublicProperties,
+    getPublicProperty
 } = require('../controllers/property.controller');
 const { protect, authorize } = require('../middleware/auth.middleware');
 
+// Public routes (no auth required)
+router.get('/public', getPublicProperties);
+router.get('/public/:id', getPublicProperty);
+
+// Protected routes
 router.route('/')
     .get(protect, getProperties)
     .post(protect, authorize('ADMIN', 'TEAM'), createProperty);
