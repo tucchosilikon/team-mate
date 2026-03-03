@@ -7,6 +7,11 @@ import {
     Wifi, PawPrint, Car, Flame, Sun, Umbrella, Key, ArrowLeft
 } from 'lucide-react';
 
+const isProduction = import.meta.env.PROD;
+const getApiBase = () => isProduction 
+    ? (import.meta.env.VITE_API_URL || 'https://teammate-backend-rk5a.onrender.com').replace('/api', '')
+    : (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001').replace('/api', '');
+
 const PublicPropertyDetail = () => {
     const { id } = useParams();
     const [property, setProperty] = useState(null);
@@ -16,11 +21,7 @@ const PublicPropertyDetail = () => {
     useEffect(() => {
         const fetchProperty = async () => {
             try {
-                const isProduction = typeof window !== 'undefined' && window.location.hostname.includes('onrender');
-                const baseUrl = isProduction 
-                    ? 'https://teammate-backend-rk5a.onrender.com'
-                    : 'http://127.0.0.1:5001';
-                const { data } = await api.get(`${baseUrl}/api/properties/public/${id}`);
+                const { data } = await api.get(`/properties/public/${id}`);
                 setProperty(data);
             } catch (error) {
                 console.error('Error fetching property:', error);
@@ -63,11 +64,7 @@ const PublicPropertyDetail = () => {
     }
     if (images.length === 0) images = ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'];
 
-    const isProduction = typeof window !== 'undefined' && window.location.hostname.includes('onrender');
-    const apiBase = isProduction 
-        ? 'https://teammate-backend-rk5a.onrender.com'
-        : ((import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001/api').replace('/api', ''));
-    const getImageUrl = (path) => path.startsWith('http') ? path : `${apiBase}${path}`;
+    const getImageUrl = (path) => path.startsWith('http') ? path : `${getApiBase()}${path}`;
 
     const nextImage = () => setCurrentImageIndex((prev) => (prev + 1) % images.length);
     const prevImage = () => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);

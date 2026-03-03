@@ -7,6 +7,11 @@ import {
     Wifi, PawPrint, Car, Flame, Sun, Umbrella, Key
 } from 'lucide-react';
 
+const isProduction = import.meta.env.PROD;
+const getApiBase = () => isProduction 
+    ? (import.meta.env.VITE_API_URL || 'https://teammate-backend-rk5a.onrender.com').replace('/api', '')
+    : (import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001').replace('/api', '');
+
 const ServiceIcon = ({ icon: Icon, active, label, color = "text-blue-500" }) => (
     <div className={`p-1.5 rounded-full ${active ? 'bg-slate-50' : 'opacity-30 grayscale'}`} title={label}>
         <Icon size={16} className={active ? color : 'text-slate-400'} />
@@ -39,11 +44,7 @@ const PropertyCard = ({ property }) => {
         setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
     };
 
-    const isProduction = typeof window !== 'undefined' && window.location.hostname.includes('onrender');
-    const apiBase = isProduction 
-        ? 'https://teammate-backend-rk5a.onrender.com'
-        : ((import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001/api').replace('/api', ''));
-    const getImageUrl = (path) => path.startsWith('http') ? path : `${apiBase}${path}`;
+    const getImageUrl = (path) => path.startsWith('http') ? path : `${getApiBase()}${path}`;
 
     return (
         <Link
@@ -118,11 +119,7 @@ const PublicProperties = () => {
     useEffect(() => {
         const fetchProperties = async () => {
             try {
-                const isProduction = typeof window !== 'undefined' && window.location.hostname.includes('onrender');
-                const baseUrl = isProduction 
-                    ? 'https://teammate-backend-rk5a.onrender.com'
-                    : 'http://127.0.0.1:5001';
-                const { data } = await api.get(`${baseUrl}/api/properties/public`);
+                const { data } = await api.get('/properties/public');
                 setProperties(data);
             } catch (error) {
                 console.error('Error fetching properties:', error);

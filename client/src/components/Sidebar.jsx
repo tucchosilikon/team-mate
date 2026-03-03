@@ -9,7 +9,7 @@ const Sidebar = () => {
 
     const links = [
         { name: 'Dashboard', path: '/', icon: LayoutDashboard },
-        { name: 'Properties', path: '/properties', icon: Building },
+        { name: 'Properties', path: '/admin/properties', icon: Building },
         { name: 'Calendar', path: '/calendar', icon: Calendar },
         { name: 'Projects', path: '/projects', icon: CheckSquare },
         { name: 'Leads', path: '/leads', icon: Users },
