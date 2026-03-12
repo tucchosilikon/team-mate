@@ -57,7 +57,7 @@ async function seedProperties() {
                 data: {
                     name: 'Property Manager',
                     type: 'OWNER',
-                    status: 'active'
+                    status: 'NEW'
                 }
             });
         }

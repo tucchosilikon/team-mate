@@ -9,6 +9,7 @@ export const PublicHeader = () => {
         { href: '#services', label: 'Services' },
         { href: '#about', label: 'About' },
         { href: '#contact', label: 'Contact' },
+        { href: '/become-an-owner', label: 'Become an Owner' },
     ];
 
     return (

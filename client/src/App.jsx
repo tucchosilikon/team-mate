@@ -20,6 +20,8 @@ import AdminBlogs from './pages/AdminBlogs';
 import BlogEditor from './pages/BlogEditor';
 import PublicProperties from './pages/PublicProperties';
 import PublicPropertyDetail from './pages/PublicPropertyDetail';
+import BecomeOwner from './pages/BecomeOwner';
+import SearchResults from './pages/SearchResults';
 
 const Layout = ({ children }) => {
     return (
@@ -50,6 +52,8 @@ function App() {
             <Route path="/blog/:id" element={<BlogDetail />} />
             <Route path="/properties" element={<PublicProperties />} />
             <Route path="/properties/:id" element={<PublicPropertyDetail />} />
+            <Route path="/become-an-owner" element={<BecomeOwner />} />
+            <Route path="/search" element={<SearchResults />} />
             <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} />
             <Route path="/dashboard" element={isAuthenticated ? <Layout><Dashboard /></Layout> : <Navigate to="/login" />} />
             <Route path="/calendar" element={isAuthenticated ? <Layout><Calendar /></Layout> : <Navigate to="/login" />} />

@@ -242,7 +242,7 @@ const useStore = create((set, get) => ({
     fetchProperties: async () => {
         set({ isPropertiesLoading: true });
         try {
-            const { data } = await api.get('/properties');
+            const { data } = await api.get('/properties/public');
             set({ properties: data, isPropertiesLoading: false });
         } catch (error) {
             set({ isPropertiesLoading: false });

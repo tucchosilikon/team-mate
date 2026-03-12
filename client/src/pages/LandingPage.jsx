@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import PublicLayout from '../layouts/PublicLayout';
 import useStore from '../store/useStore';
 import api from '../api/axios';
@@ -38,6 +38,12 @@ const LandingPage = () => {
   const { properties, fetchProperties, blogs, fetchBlogs } = useStore();
   const [propertiesToShow, setPropertiesToShow] = useState([]);
   const [blogsToShow, setBlogsToShow] = useState([]);
+  const navigate = useNavigate();
+  const [searchData, setSearchData] = useState({
+    location: '',
+    checkIn: '',
+    checkOut: ''
+  });
 
   useEffect(() => {
     fetchProperties();
@@ -64,6 +70,15 @@ const LandingPage = () => {
     return `${base}${path}`;
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (searchData.location) params.append('location', searchData.location);
+    if (searchData.checkIn) params.append('checkIn', searchData.checkIn);
+    if (searchData.checkOut) params.append('checkOut', searchData.checkOut);
+    navigate(`/search?${params.toString()}`);
+  };
+
   return (
     <PublicLayout>
       <section className="landing-hero">
@@ -75,6 +90,75 @@ const LandingPage = () => {
             Based in Bangladesh, serving since 2022. We help property owners maximize their investments 
             while we handle the day-to-day responsibilities of managing their properties.
           </p>
+          
+          <form onSubmit={handleSearch} style={{ 
+            display: 'flex', 
+            flexWrap: 'wrap',
+            justifyContent: 'center', 
+            gap: '12px',
+            maxWidth: '900px',
+            margin: '0 auto 40px',
+            background: 'rgba(255,255,255,0.95)',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.15)'
+          }}>
+            <div style={{ flex: '1 1 200px', minWidth: '200px' }}>
+              <input 
+                type="text" 
+                placeholder="Location (e.g., Dhaka, Cox's Bazar)" 
+                value={searchData.location}
+                onChange={(e) => setSearchData({...searchData, location: e.target.value})}
+                style={{ 
+                  width: '100%', 
+                  padding: '14px 16px', 
+                  border: '1px solid #ddd', 
+                  borderRadius: '4px',
+                  fontSize: '1rem'
+                }}
+              />
+            </div>
+            <div style={{ flex: '1 1 150px', minWidth: '150px' }}>
+              <input 
+                type="date" 
+                placeholder="Check-in"
+                min={new Date().toISOString().split('T')[0]}
+                value={searchData.checkIn}
+                onChange={(e) => setSearchData({...searchData, checkIn: e.target.value})}
+                style={{ 
+                  width: '100%', 
+                  padding: '14px 16px', 
+                  border: '1px solid #ddd', 
+                  borderRadius: '4px',
+                  fontSize: '1rem'
+                }}
+              />
+            </div>
+            <div style={{ flex: '1 1 150px', minWidth: '150px' }}>
+              <input 
+                type="date" 
+                placeholder="Check-out"
+                min={searchData.checkIn || new Date().toISOString().split('T')[0]}
+                value={searchData.checkOut}
+                onChange={(e) => setSearchData({...searchData, checkOut: e.target.value})}
+                style={{ 
+                  width: '100%', 
+                  padding: '14px 16px', 
+                  border: '1px solid #ddd', 
+                  borderRadius: '4px',
+                  fontSize: '1rem'
+                }}
+              />
+            </div>
+            <button 
+              type="submit" 
+              className="landing-btn landing-btn-primary"
+              style={{ padding: '14px 32px', fontSize: '1rem' }}
+            >
+              Search
+            </button>
+          </form>
+
           <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
             <a href="#contact" className="landing-btn landing-btn-primary">Get Started</a>
             <a href="#services" className="landing-btn landing-btn-outline" style={{ color: 'white', borderColor: 'white' }}>Our Services</a>
