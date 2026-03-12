@@ -22,6 +22,7 @@ import PublicProperties from './pages/PublicProperties';
 import PublicPropertyDetail from './pages/PublicPropertyDetail';
 import BecomeOwner from './pages/BecomeOwner';
 import SearchResults from './pages/SearchResults';
+import ImportProperties from './pages/ImportProperties';
 
 const Layout = ({ children }) => {
     return (
@@ -67,6 +68,7 @@ function App() {
             <Route path="/admin/blogs" element={isAuthenticated ? <Layout><AdminBlogs /></Layout> : <Navigate to="/login" />} />
             <Route path="/admin/blogs/new" element={isAuthenticated ? <BlogEditor /> : <Navigate to="/login" />} />
             <Route path="/admin/blogs/:id" element={isAuthenticated ? <BlogEditor /> : <Navigate to="/login" />} />
+            <Route path="/admin/import" element={isAuthenticated ? <Layout><ImportProperties /></Layout> : <Navigate to="/login" />} />
         </Routes>
     );
 }

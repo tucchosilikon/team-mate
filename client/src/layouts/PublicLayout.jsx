@@ -15,8 +15,8 @@ export const PublicHeader = () => {
     return (
         <header className="landing-header">
             <div className="landing-container landing-header-container">
-                <Link to="/" className="landing-logo-text">
-                    Organized Host Partners
+                <Link to="/" className="landing-logo">
+                    <img src="/logo.svg" alt="Logo" style={{ height: '40px' }} />
                 </Link>
                 
                 <nav className="landing-nav">
@@ -44,7 +44,9 @@ export const PublicFooter = () => {
             <div className="landing-container">
                 <div className="landing-footer-grid">
                     <div className="landing-footer-brand">
-                        <h3 className="landing-footer-logo">Organized Host Partners</h3>
+                        <Link to="/" className="landing-logo">
+                            <img src="/logo-white.svg" alt="Logo" style={{ height: '40px', marginBottom: '12px' }} />
+                        </Link>
                         <p style={{ opacity: 0.85, lineHeight: 1.8 }}>
                             Professional property management services dedicated to protecting your investment and maximizing your returns.
                         </p>

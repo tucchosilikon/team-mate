@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, ChevronDown, ChevronUp, Star, Upload } from 'lucide-react';
+import { X, ChevronDown, ChevronUp } from 'lucide-react';
 import useStore from '../store/useStore';
 
 const Section = ({ title, children, defaultOpen = false }) => {
@@ -23,22 +23,11 @@ const Section = ({ title, children, defaultOpen = false }) => {
 
 const PropertyForm = ({ property, onClose }) => {
     const isEditing = !!property;
-    const { createProperty, updateProperty, leads, fetchLeads, uploadPropertyImage } = useStore();
-    const [selectedImages, setSelectedImages] = useState([]);
-    const [previewImages, setPreviewImages] = useState([]);
-    const [existingImages, setExistingImages] = useState([]);
+    const { createProperty, updateProperty, leads, fetchLeads } = useStore();
 
     useEffect(() => {
         fetchLeads();
-        if (property && property.images) {
-            try {
-                const parsed = JSON.parse(property.images);
-                setExistingImages(parsed);
-            } catch (e) {
-                setExistingImages([]);
-            }
-        }
-    }, [fetchLeads, property]);
+    }, [fetchLeads]);
 
     const [formData, setFormData] = useState({
         name: property?.name || '',
@@ -163,6 +152,25 @@ const PropertyForm = ({ property, onClose }) => {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [images, setImages] = useState([]);
+
+    useEffect(() => {
+        fetchLeads();
+        if (property && property.images) {
+            try {
+                const parsed = JSON.parse(property.images);
+                setImages(parsed.map(url => ({ url, file: null, preview: null })));
+            } catch (e) {
+                setImages([]);
+            }
+        }
+    }, [fetchLeads, property]);
+
+    useEffect(() => {
+        if (images.length === 0 && !property) {
+            setImages([{ url: '', file: null, preview: null }]);
+        }
+    }, [property, images.length]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -172,36 +180,74 @@ const PropertyForm = ({ property, onClose }) => {
         }));
     };
 
-    const handleFileChange = (e) => {
-        const files = Array.from(e.target.files);
-        setSelectedImages([...selectedImages, ...files]);
-
-        const newPreviews = files.map(file => URL.createObjectURL(file));
-        setPreviewImages([...previewImages, ...newPreviews]);
+    const handleImageUrlChange = (index, value) => {
+        const newImages = [...images];
+        newImages[index].url = value;
+        newImages[index].preview = value;
+        setImages(newImages);
     };
 
-    const removeNewImage = (index) => {
-        const newSelected = [...selectedImages];
-        newSelected.splice(index, 1);
-        setSelectedImages(newSelected);
+    const handleImageFileChange = async (index, e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-        const newPreviews = [...previewImages];
-        URL.revokeObjectURL(newPreviews[index]);
-        newPreviews.splice(index, 1);
-        setPreviewImages(newPreviews);
+        const newImages = [...images];
+        newImages[index].file = file;
+        newImages[index].preview = URL.createObjectURL(file);
+        newImages[index].url = '';
+        setImages(newImages);
+
+        if (isEditing && property?.id) {
+            try {
+                const formData = new FormData();
+                formData.append('images', file);
+                const token = localStorage.getItem('token');
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001/api';
+                const response = await fetch(`${apiUrl}/properties/${property.id}/images`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.images && data.images.length > 0) {
+                    newImages[index].url = data.images[data.images.length - 1];
+                    setImages([...newImages]);
+                }
+            } catch (err) {
+                console.error('Upload failed:', err);
+            }
+        }
     };
 
-    const removeExistingImage = (index) => {
-        const newExisting = [...existingImages];
-        newExisting.splice(index, 1);
-        setExistingImages(newExisting);
+    const addNewImage = () => {
+        setImages([...images, { url: '', file: null, preview: null }]);
     };
 
-    const makeFeatureExisting = (index) => {
-        const newExisting = [...existingImages];
-        const [moved] = newExisting.splice(index, 1);
-        newExisting.unshift(moved);
-        setExistingImages(newExisting);
+    const removeImage = (index) => {
+        const newImages = [...images];
+        if (newImages[index].preview && newImages[index].preview.startsWith('blob:')) {
+            URL.revokeObjectURL(newImages[index].preview);
+        }
+        newImages.splice(index, 1);
+        setImages(newImages);
+    };
+
+    const moveImage = (index, direction) => {
+        if (direction === -1 && index === 0) return;
+        if (direction === 1 && index === images.length - 1) return;
+        
+        const newImages = [...images];
+        const temp = newImages[index];
+        newImages[index] = newImages[index + direction];
+        newImages[index + direction] = temp;
+        setImages(newImages);
+    };
+
+    const setAsFeatured = (index) => {
+        const newImages = [...images];
+        const [featured] = newImages.splice(index, 1);
+        newImages.unshift(featured);
+        setImages(newImages);
     };
 
     const handleSubmit = async (e) => {
@@ -210,29 +256,16 @@ const PropertyForm = ({ property, onClose }) => {
         setError('');
 
         try {
-            let propertyId = property?.id;
+            const finalImages = images
+                .filter(img => img.url || img.preview)
+                .map(img => img.url);
+
+            const dataToSave = { ...formData, images: JSON.stringify(finalImages) };
 
             if (isEditing) {
-                let uploadedPaths = [];
-                if (selectedImages.length > 0) {
-                    const uploadRes = await uploadPropertyImage(property.id, selectedImages);
-                    const allServerImages = uploadRes.images;
-                    const count = selectedImages.length;
-                    uploadedPaths = allServerImages.slice(-count);
-                }
-
-                const finalImages = [...existingImages, ...uploadedPaths];
-
-                const dataToUpdate = { ...formData, images: JSON.stringify(finalImages) };
-                await updateProperty(property.id, dataToUpdate);
-
+                await updateProperty(property.id, dataToSave);
             } else {
-                const newProperty = await createProperty(formData);
-                propertyId = newProperty.id;
-
-                if (selectedImages.length > 0) {
-                    await uploadPropertyImage(propertyId, selectedImages);
-                }
+                await createProperty(dataToSave);
             }
             onClose();
         } catch (err) {
@@ -352,63 +385,61 @@ const PropertyForm = ({ property, onClose }) => {
                     </div>
 
                     <Section title="Images" defaultOpen>
-                        <div className="space-y-4">
-                            {/* Image Upload Section */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Property Images</label>
-
-                                {/* Existing Images Reordering/Deletion */}
-                                {existingImages.length > 0 && (
-                                    <div className="mb-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-                                        {existingImages.map((img, index) => (
-                                            <div key={index} className={`relative group border-2 rounded-lg overflow-hidden ${index === 0 ? 'border-indigo-500' : 'border-gray-200'}`}>
-                                                <img src={`${import.meta.env.VITE_API_URL}${img}`} alt="" className="h-32 w-full object-cover" />
-                                                <div className="absolute top-1 left-1 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                                                    {index === 0 ? 'Feature' : `#${index + 1}`}
-                                                </div>
-                                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 gap-2">
-                                                    {index !== 0 && (
-                                                        <button type="button" onClick={() => makeFeatureExisting(index)} className="p-1 bg-white rounded-full text-yellow-500 hover:bg-yellow-50" title="Make Feature">
-                                                            <Star size={16} fill="currentColor" />
-                                                        </button>
-                                                    )}
-                                                    <button type="button" onClick={() => removeExistingImage(index)} className="p-1 bg-white rounded-full text-red-500 hover:bg-red-50" title="Remove">
-                                                        <X size={16} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        ))}
+                        <div className="space-y-3">
+                            {images.map((img, index) => (
+                                <div key={index} className="flex items-center gap-3 p-2 border border-gray-200 rounded-lg">
+                                    {img.preview && (
+                                        <img 
+                                            src={img.preview} 
+                                            alt={`Preview ${index + 1}`} 
+                                            className="h-12 w-16 object-cover rounded"
+                                        />
+                                    )}
+                                    
+                                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-2">
+                                        <input
+                                            type="text"
+                                            value={img.url}
+                                            onChange={(e) => handleImageUrlChange(index, e.target.value)}
+                                            placeholder="Image URL"
+                                            className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        />
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleImageFileChange(index, e)}
+                                            className="px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        />
                                     </div>
-                                )}
-
-                                {/* New Images Preview */}
-                                {previewImages.length > 0 && (
-                                    <div className="mb-2">
-                                        <p className="text-xs text-gray-500 mb-2">New Images to Upload:</p>
-                                        <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                                            {previewImages.map((url, index) => (
-                                                <div key={index} className="relative h-20 w-20 rounded border border-gray-300 overflow-hidden">
-                                                    <img src={url} alt="" className="h-full w-full object-cover" />
-                                                    <button type="button" onClick={() => removeNewImage(index)} className="absolute top-0 right-0 bg-red-500 text-white p-0.5 rounded-bl">
-                                                        <X size={12} />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="flex items-center justify-center w-full">
-                                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                            <Upload className="w-8 h-8 mb-4 text-gray-500" />
-                                            <p className="mb-2 text-sm text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                                            <p className="text-xs text-gray-500">PNG, JPG or GIF</p>
-                                        </div>
-                                        <input type="file" className="hidden" multiple accept="image/*" onChange={handleFileChange} />
-                                    </label>
+                                    
+                                    <button
+                                        type="button"
+                                        onClick={() => setAsFeatured(index)}
+                                        className={`p-1 rounded ${index === 0 ? 'text-yellow-500' : 'text-gray-300 hover:text-yellow-500'}`}
+                                        title="Set as featured"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                            <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    
+                                    <button
+                                        type="button"
+                                        onClick={() => removeImage(index)}
+                                        className="p-1 text-red-500 hover:bg-red-50 rounded"
+                                    >
+                                        <X size={18} />
+                                    </button>
                                 </div>
-                            </div>
+                            ))}
+                            
+                            <button
+                                type="button"
+                                onClick={addNewImage}
+                                className="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-colors"
+                            >
+                                + Add Another Image
+                            </button>
                         </div>
                     </Section>
 

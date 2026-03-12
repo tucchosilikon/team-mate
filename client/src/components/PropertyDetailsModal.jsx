@@ -1,17 +1,20 @@
 import { useState } from 'react';
-import { X, Upload, Wifi, Key, FileText, Car, Trash, DollarSign, Home, Dog, Zap, Coffee, Sun, Umbrella, Lock, User } from 'lucide-react';
-import useStore from '../store/useStore';
+import { X, Edit2, Wifi, Key, FileText, Car, Trash, DollarSign, Home, Dog, Zap, Coffee, Sun, Umbrella, Lock, User } from 'lucide-react';
 
 const PropertyDetailsModal = ({ property, onClose }) => {
-    const { uploadPropertyImage } = useStore();
-    const [uploading, setUploading] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const isProduction = typeof window !== 'undefined' && window.location.hostname.includes('onrender');
     const imageBase = isProduction ? 'https://teammate-backend-rk5a.onrender.com' : 'http://127.0.0.1:5001';
 
+    const getImageUrl = (img) => {
+        if (!img) return 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
+        if (img.startsWith('http://') || img.startsWith('https://')) return img;
+        return `${imageBase}${img}`;
+    };
+
     const images = property.images ? JSON.parse(property.images) : [];
-    const mainImage = images.length > 0 ? `${imageBase}${images[currentImageIndex]}` : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
+    const mainImage = images.length > 0 ? getImageUrl(images[currentImageIndex]) : 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
 
     const handleUpload = async (e) => {
         const file = e.target.files[0];
@@ -46,11 +49,16 @@ const PropertyDetailsModal = ({ property, onClose }) => {
 
                     {/* Image Controls */}
                     <div className="absolute bottom-4 right-4 flex space-x-2 z-10">
-                        <label className="cursor-pointer flex items-center space-x-2 px-4 py-2 bg-black/70 text-white rounded-lg hover:bg-black/80 transition-colors backdrop-blur-sm">
-                            <Upload size={18} />
-                            <span className="text-sm font-medium">{uploading ? 'Uploading...' : 'Add Photo'}</span>
-                            <input type="file" className="hidden" accept="image/*" onChange={handleUpload} disabled={uploading} />
-                        </label>
+                        <button
+                            onClick={() => {
+                                onClose();
+                                window.dispatchEvent(new CustomEvent('editProperty', { detail: property }));
+                            }}
+                            className="flex items-center space-x-2 px-4 py-2 bg-black/70 text-white rounded-lg hover:bg-black/80 transition-colors backdrop-blur-sm"
+                        >
+                            <Edit2 size={18} />
+                            <span className="text-sm font-medium">Edit Property</span>
+                        </button>
                     </div>
 
                     {images.length > 1 && (
@@ -61,7 +69,7 @@ const PropertyDetailsModal = ({ property, onClose }) => {
                                     onClick={() => setCurrentImageIndex(idx)}
                                     className={`h-12 w-16 rounded-md overflow-hidden border-2 transition-all shrink-0 ${currentImageIndex === idx ? 'border-blue-500' : 'border-white/50'}`}
                                 >
-                                    <img src={`${imageBase}${img}`} className="w-full h-full object-cover" />
+                                    <img src={getImageUrl(img)} className="w-full h-full object-cover" />
                                 </button>
                             ))}
                         </div>

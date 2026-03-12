@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Building, CheckSquare, Users, Settings, LogOut, DollarSign, Calendar, FileText } from 'lucide-react';
+import { LayoutDashboard, Building, CheckSquare, Users, Settings, LogOut, DollarSign, Calendar, FileText, Upload } from 'lucide-react';
 import useStore from '../store/useStore';
 import clsx from 'clsx';
 
@@ -21,12 +21,15 @@ const Sidebar = () => {
     if (user?.role === 'ADMIN') {
         links.push({ name: 'Users', path: '/users', icon: Users });
         links.push({ name: 'Blog Posts', path: '/admin/blogs', icon: FileText });
+        links.push({ name: 'Import Properties', path: '/admin/import', icon: Upload });
     }
 
     return (
         <div className="h-screen w-64 bg-slate-900 text-white flex flex-col fixed left-0 top-0">
             <div className="p-6">
-                <h1 className="text-2xl font-bold tracking-wider text-blue-400">TeamMate</h1>
+                <Link to="/">
+                    <img src="/logo-white.svg" alt="Logo" className="h-10 w-auto" />
+                </Link>
             </div>
 
             <nav className="flex-1 px-4 space-y-2">

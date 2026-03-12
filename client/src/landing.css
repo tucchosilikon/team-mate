@@ -112,6 +112,17 @@
   height: 100%;
 }
 
+.landing-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.landing-logo img {
+  height: 40px;
+  width: auto;
+}
+
 .landing-logo-text {
   font-family: var(--landing-font-heading);
   font-size: 1.5rem;
@@ -214,9 +225,15 @@
 }
 
 .landing-footer-logo {
-  color: var(--landing-white);
-  font-size: 1.5rem;
-  margin-bottom: 20px;
+  font-family: var(--landing-font-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.landing-footer-logo img {
+  height: 32px;
 }
 
 .landing-footer-links ul {
