@@ -23,6 +23,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
+.landing-body main {
+  padding-top: 20px;
+}
+
 .landing-h1, .landing-h2, .landing-h3, .landing-h4 {
   font-family: var(--landing-font-heading);
   color: var(--landing-navy);

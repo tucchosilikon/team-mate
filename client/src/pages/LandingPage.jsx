@@ -114,7 +114,8 @@ const LandingPage = () => {
                   padding: '14px 16px', 
                   border: '1px solid #ddd', 
                   borderRadius: '4px',
-                  fontSize: '1rem'
+                  fontSize: '1rem',
+                  color: '#333'
                 }}
               />
             </div>
@@ -130,7 +131,8 @@ const LandingPage = () => {
                   padding: '14px 16px', 
                   border: '1px solid #ddd', 
                   borderRadius: '4px',
-                  fontSize: '1rem'
+                  fontSize: '1rem',
+                  color: '#333'
                 }}
               />
             </div>
@@ -146,7 +148,8 @@ const LandingPage = () => {
                   padding: '14px 16px', 
                   border: '1px solid #ddd', 
                   borderRadius: '4px',
-                  fontSize: '1rem'
+                  fontSize: '1rem',
+                  color: '#333'
                 }}
               />
             </div>
@@ -158,11 +161,6 @@ const LandingPage = () => {
               Search
             </button>
           </form>
-
-          <div style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}>
-            <a href="#contact" className="landing-btn landing-btn-primary">Get Started</a>
-            <a href="#services" className="landing-btn landing-btn-outline" style={{ color: 'white', borderColor: 'white' }}>Our Services</a>
-          </div>
         </div>
       </section>
 
