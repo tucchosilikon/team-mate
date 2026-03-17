@@ -136,7 +136,7 @@ const PropertyCard = ({ property, onSelect, onEdit, onDelete, deleting }) => {
                             className={`w-6 h-6 rounded-full flex items-center justify-center transition-opacity ${property.airbnbUrl ? 'opacity-100 hover:opacity-80' : 'opacity-20 cursor-default'}`}
                             title={property.airbnbUrl ? "View on Airbnb" : "Not listed"}
                         >
-                            <img src="/airbnb.svg" alt="Airbnb" className="w-full h-full" />
+                            <img src="/airbnb.avif" alt="Airbnb" className="w-full h-full" />
                         </a>
 
                         {/* VRBO */}
@@ -315,6 +315,14 @@ const Properties = () => {
 
     useEffect(() => {
         fetchProperties();
+        
+        const handleEditProperty = (e) => {
+            setPropertyToEdit(e.detail);
+            setShowForm(true);
+        };
+        
+        window.addEventListener('editProperty', handleEditProperty);
+        return () => window.removeEventListener('editProperty', handleEditProperty);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
